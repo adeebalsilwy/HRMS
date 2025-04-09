@@ -61,7 +61,8 @@ class Fingerprints extends Component
         $this->employees = Employee::all();
 
         $this->selectedEmployeeId = Auth::user()->employee_id;
-        $this->selectedEmployee = Employee::find($this->selectedEmployeeId);
+        $this->selectedEmployee = Employee::with(['timelines.position', 'timelines.department', 'timelines.center'])
+            ->find($this->selectedEmployeeId);
 
         $currentDate = Carbon::now();
         $previousMonth = $currentDate->copy()->subMonth();
@@ -80,7 +81,8 @@ class Fingerprints extends Component
     public function applyFilter()
     {
         // Employee
-        $this->selectedEmployee = Employee::find($this->selectedEmployeeId);
+        $this->selectedEmployee = Employee::with(['timelines.position', 'timelines.department', 'timelines.center'])
+            ->find($this->selectedEmployeeId);
 
         // Date range
         if ($this->dateRange) {

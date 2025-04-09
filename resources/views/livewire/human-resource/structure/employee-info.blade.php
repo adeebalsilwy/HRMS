@@ -57,13 +57,13 @@
                   <span class="badge rounded-pill bg-label-primary"><i class="ti ti-id"></i> {{ $employee->id }}</span>
                 </li>
                 <li class="list-inline-item">
-                  <i class="ti ti-building-community"></i> {{ $employee->current_center }}
+                  <i class="ti ti-building-community"></i> {{ $employee->current_center && isset($employee->current_center->name) ? $employee->current_center->name : __('No Center') }}
                 </li>
                 <li class="list-inline-item">
-                  <i class="ti ti-building"></i> {{ $employee->current_department }}
+                  <i class="ti ti-building"></i> {{ $employee->current_department && isset($employee->current_department->name) ? $employee->current_department->name : __('No Department') }}
                 </li>
                 <li class="list-inline-item">
-                  <i class="ti ti-map-pin"></i> {{ $employee->current_position }}
+                  <i class="ti ti-map-pin"></i> {{ $employee->current_position && isset($employee->current_position->name) ? $employee->current_position->name : __('No Position') }}
                 </li>
                 <li class="list-inline-item">
                   <i class="ti ti-rocket"></i> {{ $employee->join_at_short_form }}
@@ -379,7 +379,7 @@
               <div class="timeline-event">
                 <div class="timeline-header">
                   <div class="timeline-row d-flex m-0">
-                    <h6 class="m-0">{{ $timeline->position->name }}</h6>
+                    <h6 class="m-0">{{ isset($timeline->position) && isset($timeline->position->name) ? $timeline->position->name : __('No Position') }}</h6>
                     <i wire:click='setPresentTimeline({{ $timeline }})' class="timeline-icon text-success ti ti-refresh mx-1"></i>
                     <i wire:click='showUpdateTimelineModal({{ $timeline }})' class="timeline-icon text-info ti ti-edit" data-bs-toggle="modal" data-bs-target="#timelineModal"></i>
                     <i wire:click='confirmDeleteTimeline({{ $timeline }})' class="timeline-icon text-danger ti ti-trash mx-1"></i>
@@ -391,7 +391,7 @@
                   </div>
                   <small class="text-muted">@if ($timeline->end_date == null) {{ __('Present') }} @else {{ $timeline->start_date }} --> {{ $timeline->end_date }} @endif</small>
                 </div>
-                <p class="mb-2">{{ $timeline->center->name }}</p>
+                <p class="mb-2">{{ isset($timeline->center) && isset($timeline->center->name) ? $timeline->center->name : __('No Center') }} - {{ isset($timeline->department) && isset($timeline->department->name) ? $timeline->department->name : __('No Department') }}</p>
               </div>
             </li>
           @endforeach

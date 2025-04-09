@@ -45,29 +45,100 @@ class EmployeeInfo extends Component
     // 👉 Mount
     public function mount($id)
     {
-        $this->employee = Employee::find($id);
+        $this->employee = Employee::with([
+            'timelines.center',
+            'timelines.department',
+            'timelines.position',
+            'contract'
+        ])->find($id);
+        
+        if (!$this->employee) {
+            session()->flash('error', __('Employee not found'));
+            return redirect()->route('structure-employees');
+        }
+        
         $this->employeeAssets = $this->employee
             ->transitions()
             ->with('asset')
             ->orderBy('handed_date', 'desc')
             ->get();
+            
         // Cargamos los salarios del empleado
         $this->employeeSalaries = $this->employee
             ->salaries()
             ->orderBy('salary_date', 'desc')
             ->get();
+            
         $this->centers = Center::all();
-        $this->departments = department::all();
+        $this->departments = Department::all();
         $this->positions = Position::all();
     }
 
     // 👉 Render
     public function render()
     {
-        $this->employeeTimelines = Timeline::with(['center', 'department', 'position'])
-            ->where('employee_id', $this->employee->id)
-            ->orderBy('id', 'desc')
-            ->get();
+        try {
+            // Load timelines with eager loading of related models
+            $this->employeeTimelines = Timeline::with(['center', 'department', 'position'])
+                ->where('employee_id', $this->employee->id)
+                ->orderBy('id', 'desc')
+                ->get();
+                
+            // Verify data integrity for debugging
+            foreach ($this->employeeTimelines as $index => $timeline) {
+                if (!isset($timeline->center) || !isset($timeline->center->name)) {
+                    \Log::warning("Timeline {$timeline->id} is missing center relation", [
+                        'timeline_id' => $timeline->id,
+                        'center_id' => $timeline->center_id
+                    ]);
+                }
+                
+                if (!isset($timeline->department) || !isset($timeline->department->name)) {
+                    \Log::warning("Timeline {$timeline->id} is missing department relation", [
+                        'timeline_id' => $timeline->id,
+                        'department_id' => $timeline->department_id
+                    ]);
+                }
+                
+                if (!isset($timeline->position) || !isset($timeline->position->name)) {
+                    \Log::warning("Timeline {$timeline->id} is missing position relation", [
+                        'timeline_id' => $timeline->id,
+                        'position_id' => $timeline->position_id
+                    ]);
+                }
+            }
+            
+        } catch (\Exception $e) {
+            \Log::error("Error loading timelines: " . $e->getMessage(), [
+                'employee_id' => $this->employee->id,
+                'exception' => $e
+            ]);
+            
+            // Provide empty collection if there's an error
+            $this->employeeTimelines = collect();
+        }
+
+        // For debugging purposes
+        if (empty($this->employee->current_center) || empty($this->employee->current_department) || empty($this->employee->current_position)) {
+            $presentTimeline = Timeline::with(['center', 'department', 'position'])
+                ->where('employee_id', $this->employee->id)
+                ->whereNull('end_date')
+                ->first();
+                
+            if ($presentTimeline) {
+                \Log::info('Timeline found but relationships may be missing', [
+                    'employee_id' => $this->employee->id,
+                    'timeline_id' => $presentTimeline->id,
+                    'has_center' => !empty($presentTimeline->center),
+                    'has_department' => !empty($presentTimeline->department),
+                    'has_position' => !empty($presentTimeline->position)
+                ]);
+            } else {
+                \Log::info('No present timeline found for employee', [
+                    'employee_id' => $this->employee->id
+                ]);
+            }
+        }
 
         return view('livewire.human-resource.structure.employee-info');
     }

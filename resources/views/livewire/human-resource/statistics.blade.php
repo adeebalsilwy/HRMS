@@ -76,8 +76,8 @@
                     </div>
                     <div class="chat-contact-info flex-grow-1 ms-2">
                       <h6 class="m-0">{{ $employee->full_name }}</h6>
-                      <small class="user-status text-muted">{{ $employee->current_position }}</small>
-                    </div> --}}
+                      <small class="user-status text-muted">{{ isset($selectedEmployee->current_position) && isset($selectedEmployee->current_position->name) ? $selectedEmployee->current_position->name : __('No Position') }}</small>
+                      </div> --}}
                     <div class="avatar avatar-lg me-2">
                       <a href="{{ route('structure-employees-info', $employee->id) }}">
                         <img src="{{ Storage::disk("public")->exists($employee->profile_photo_path) ? Storage::disk("public")->url($employee->profile_photo_path) : Storage::disk("public")->url('profile-photos/.default-photo.jpg') }}" alt="Avatar" class="rounded">
@@ -98,7 +98,7 @@
                           <i class="ti ti-building"></i> {{ $employee->current_department }}
                         </li> --}}
                         <li class="list-inline-item">
-                          <i class="ti ti-building-community"></i> {{ $employee->current_center }}
+                          <i class="ti ti-building-community"></i> {{ $employee->current_center && isset($employee->current_center->name) ? $employee->current_center->name : __('No Center') }}
                         </li>
                         <li class="list-inline-item">
                           <i class="ti ti-calendar"></i> {{ $employee->join_at }}

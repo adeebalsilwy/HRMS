@@ -26,21 +26,21 @@ class Timeline extends Model
     // 👉 Links
     public function center(): BelongsTo
     {
-        return $this->belongsTo(Center::class);
+        return $this->belongsTo(Center::class, 'center_id');
     }
 
     public function department(): BelongsTo
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
     public function position(): BelongsTo
     {
-        return $this->belongsTo(Position::class);
+        return $this->belongsTo(Position::class, 'position_id');
     }
 
     public function employee(): BelongsTo
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'employee_id');
     }
 }

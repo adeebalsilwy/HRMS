@@ -169,39 +169,69 @@ class Employee extends Model
 
     public function getCurrentPositionAttribute()
     {
-        $data = Timeline::with('position')
-            ->where('employee_id', $this->id)
-            ->whereNull('end_date')
-            ->first();
-        if ($data && $data->position) {
-            return $data->position;
-        } else {
+        try {
+            $data = Timeline::with('position')
+                ->where('employee_id', $this->id)
+                ->whereNull('end_date')
+                ->first();
+            
+            if ($data && isset($data->position)) {
+                return $data->position;
+            } else {
+                \Log::warning('Position not found for employee ' . $this->id);
+                return null;
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error getting current position: ' . $e->getMessage(), [
+                'employee_id' => $this->id,
+                'exception' => $e
+            ]);
             return null;
         }
     }
 
     public function getCurrentDepartmentAttribute()
     {
-        $data = Timeline::with('department')
-            ->where('employee_id', $this->id)
-            ->whereNull('end_date')
-            ->first();
-        if ($data && $data->department) {
-            return $data->department;
-        } else {
+        try {
+            $data = Timeline::with('department')
+                ->where('employee_id', $this->id)
+                ->whereNull('end_date')
+                ->first();
+            
+            if ($data && isset($data->department)) {
+                return $data->department;
+            } else {
+                \Log::warning('Department not found for employee ' . $this->id);
+                return null;
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error getting current department: ' . $e->getMessage(), [
+                'employee_id' => $this->id,
+                'exception' => $e
+            ]);
             return null;
         }
     }
 
     public function getCurrentCenterAttribute()
     {
-        $data = Timeline::with('center')
-            ->where('employee_id', $this->id)
-            ->whereNull('end_date')
-            ->first();
-        if ($data && $data->center) {
-            return $data->center;
-        } else {
+        try {
+            $data = Timeline::with('center')
+                ->where('employee_id', $this->id)
+                ->whereNull('end_date')
+                ->first();
+            
+            if ($data && isset($data->center)) {
+                return $data->center;
+            } else {
+                \Log::warning('Center not found for employee ' . $this->id);
+                return null;
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error getting current center: ' . $e->getMessage(), [
+                'employee_id' => $this->id,
+                'exception' => $e
+            ]);
             return null;
         }
     }

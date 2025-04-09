@@ -87,11 +87,14 @@
                     <i class="ti ti-menu-2 ti-sm"></i>
                   </a>
                   <div class="flex-shrink-0 avatar">
-                    <img src="{{ Storage::disk("public")->exists($selectedEmployee->profile_photo_path) ? Storage::disk("public")->url($selectedEmployee->profile_photo_path) : Storage::disk("public")->url('profile-photos/.default-photo.jpg') }}" class="rounded-circle" alt="Avatar">
+                    <img src="{{ $selectedEmployee && $selectedEmployee->profile_photo_path && Storage::disk('public')->exists($selectedEmployee->profile_photo_path) 
+                      ? Storage::disk('public')->url($selectedEmployee->profile_photo_path) 
+                      : Storage::disk('public')->url('profile-photos/.default-photo.jpg') }}" 
+                      class="rounded-circle" alt="Avatar">
                   </div>
                   <div class="chat-contact-info flex-grow-1 ms-2">
                     <h6 class="m-0">{{ $selectedEmployee->full_name }}</h6>
-                    <small class="user-status text-muted">{{ $selectedEmployee->current_position }}</small>
+                    <small class="user-status text-muted">{{ isset($selectedEmployee->current_position) && isset($selectedEmployee->current_position->name) ? $selectedEmployee->current_position->name : __('No Position') }}</small>
                   </div>
                 </div>
 
